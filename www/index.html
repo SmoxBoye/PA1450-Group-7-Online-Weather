@@ -1,0 +1,64 @@
+<html>
+<head>
+  <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>PA1450</title>
+  <meta name="description" content="PA1450"/>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <!--<h1>Basic application demo</h1>
+  <h2>Greeting</h2>
+  <p>The API can be used over at <a href="/greeting/Joe%20Doe">/greeting/&lt;username&gt;</a>.</p>
+  <object data="/data" style="width: 100%">
+    <embed src="/greeting/Joe%20Doe"></embed>
+  </object>
+  -->
+<div id="header">
+  <h1>Weather Application</h1>
+</div>
+<div id="main-box">
+  <div id="graph-box">
+    <select id="Category">
+      <option value="temp">Temperature</option>
+      <option value="rain">Rain</option>
+      <option value="clouds">Clouds</option>
+      <option value="ws" selected>Wind Speed</option>
+    </select>
+    <div id="graph"></div>
+    <div id="graph-modifiers">
+      <div id="import-box" class="modifier-boxes">
+        <button id="import-new" class="import-boxes"><p>Import new</button>
+        <button id="import-merge" class="import-boxes"><p>Import merge</button>
+      </div>
+      <div id="time-frame-box" class="modifier-boxes">
+        <p style="margin-top:0;">Time frame</p>
+        <div id="tf-boxes">
+          <input type="date" id="tf-1">
+          <input type="date" id="tf-2">
+        </div>
+        <div id="time-frame-inputs"></div>
+      </div>
+      <div id="export-box" class="modifier-boxes">
+        <button id="export" class="import-boxes"><p>Export</button>
+      </div>
+    </div>
+  </div>
+  <div id="text-box">
+
+  </div>
+</div>
+<div id="footer">
+  <h2>Team 7</h2>
+  <div id="names">
+    <div class="name">Simon Bengtsson</div>
+    <div class="name">Jasmine Bergman</div>
+    <div class="name">Alfons Flystam</div>
+    <div class="name">Tobias Holm</div>
+    <div class="name">Jesper Lönn Stråle</div>
+  </div>
+</div>
+</body>
+</html>
