@@ -6,13 +6,12 @@ class DrawManager():
     def __init__(self):
         pass
 
-    def create_fig(self,df,df_attribute = []):
+    def create_fig(self,df,df_attribute = [], time_scope):
         if df_attribute == []:
-            df_melt = df.melt(id_vars=["Datum", "Tid (UTC)"], value_vars=df.columns[2]) #supposed the first column is day and second is time, the thrid, or [2], is the first with data in it
-            fig = px.line(df_melt, x="Time", y="value")
+            fig = px.line(df, x="time", y=df.columns[1])
         else:
-            df_melt = df.melt(id_vars=["Datum", "Tid (UTC)"], value_vars=df_attribute)
-            fig = px.line(df_melt, x="Time" , y="value")
+            df_melt = df.melt(id_vars="time", value_vars=df_attribute)
+            fig = px.line(df_melt, x="time" , y="value")
         return fig
 
 if __name__ == __main__:
