@@ -34,8 +34,10 @@ class DataManager:
                         #print(df)
                         df = self._clean_columns(df)
                         #print(df)
+                        df.insert(0, "time", df["Datum"] + ":" + df["Tid (UTC)"].str[:2])
+                        df = df.drop(columns=["Datum", "Tid (UTC)"])
                         self._dataframes.append(df)
-                        for cat in [cat for cat in df.columns if cat not in ["Datum", "Tid (UTC)"]]:
+                        for cat in [cat for cat in df.columns if cat != "time"]:
                             if cat not in self._categories:
                                 self._categories.append(cat)
                         break
@@ -43,7 +45,7 @@ class DataManager:
         except FileNotFoundError:
             return 1
         except Exception as e:
-            print(e)
+            print(f"\nError: {e} \n")
             # If unspecified error occurs will return -1.
             return -1
     
@@ -58,5 +60,11 @@ class DataManager:
         for frame in self._dataframes:
             if category in frame.columns:
                 return frame
+    
+    
 
+dm = DataManager()
 
+dm.load_dataframe("downloads\smhi-opendata_3_4_65090_20200512_194409.csv")
+
+print(dm.get_category(dm.categories[0]))
