@@ -60,11 +60,3 @@ class DataManager:
         for frame in self._dataframes:
             if category in frame.columns:
                 return frame
-    
-    
-
-dm = DataManager()
-
-dm.load_dataframe("downloads\smhi-opendata_3_4_65090_20200512_194409.csv")
-
-print(dm.get_category(dm.categories[0]))
