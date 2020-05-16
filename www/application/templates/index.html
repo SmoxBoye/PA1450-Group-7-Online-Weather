@@ -1,0 +1,51 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+<div id="header">
+  <h1>Weather Application</h1>
+</div>
+<div id="main-box">
+  <div id="graph-box">
+    <select id="Category">
+      <option value="temp">Temperature</option>
+      <option value="rain">Rain</option>
+      <option value="clouds">Clouds</option>
+      <option value="ws" selected>Wind Speed</option>
+    </select>
+    <div id="graph"></div>
+    <div id="graph-modifiers">
+      <div id="import-box" class="modifier-boxes">
+        <form id="import-new" action="/" method="POST" enctype="multipart/form-data">
+          <input type="file" name="file">Select csv...</input>
+          <button type="submit" value="Upload">Upload</button>
+          <button type="submit">Merge</button>
+        </form>
+      </div>
+      <div id="time-frame-box" class="modifier-boxes">
+        <p style="margin-top:0;">Time frame</p>
+        <div id="tf-boxes">
+          <input type="date" id="tf-1">
+          <input type="date" id="tf-2">
+        </div>
+        <div id="time-frame-inputs"></div>
+      </div>
+      <div id="export-box" class="modifier-boxes">
+        <button id="export" class="import-boxes"><p>Export</button>
+      </div>
+    </div>
+  </div>
+  <div id="text-box">
+
+  </div>
+</div>
+<div id="footer">
+  <h2>Team 7</h2>
+  <div id="names">
+    <div class="name">Simon Bengtsson</div>
+    <div class="name">Jasmine Bergman</div>
+    <div class="name">Alfons Flystam</div>
+    <div class="name">Tobias Holm</div>
+    <div class="name">Jesper Lönn Stråle</div>
+  </div>
+</div>
+{% endblock %}
