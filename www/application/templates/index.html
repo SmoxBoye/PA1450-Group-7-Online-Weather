@@ -1,21 +1,6 @@
-<html>
-<head>
-  <meta http-equiv="Content-type" content="text/html; charset=utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>PA1450</title>
-  <meta name="description" content="PA1450"/>
-  <link rel="stylesheet" type="text/css" href="style.css">
-</head>
-<body>
-  <!--<h1>Basic application demo</h1>
-  <h2>Greeting</h2>
-  <p>The API can be used over at <a href="/greeting/Joe%20Doe">/greeting/&lt;username&gt;</a>.</p>
-  <object data="/data" style="width: 100%">
-    <embed src="/greeting/Joe%20Doe"></embed>
-  </object>
-  -->
+{% extends "layout.jinja2" %}
+
+{% block content %}
 <div id="header">
   <h1>Weather Application</h1>
 </div>
@@ -30,8 +15,11 @@
     <div id="graph"></div>
     <div id="graph-modifiers">
       <div id="import-box" class="modifier-boxes">
-        <button id="import-new" class="import-boxes"><p>Import new</button>
-        <button id="import-merge" class="import-boxes"><p>Import merge</button>
+        <form id="import-new" action="/" method="POST" enctype="multipart/form-data">
+          <input type="file" name="file">Select csv...</input>
+          <button type="submit" value="Upload">Upload</button>
+          <button type="submit">Merge</button>
+        </form>
       </div>
       <div id="time-frame-box" class="modifier-boxes">
         <p style="margin-top:0;">Time frame</p>
@@ -60,5 +48,4 @@
     <div class="name">Jesper Lönn Stråle</div>
   </div>
 </div>
-</body>
-</html>
+{% endblock %}
