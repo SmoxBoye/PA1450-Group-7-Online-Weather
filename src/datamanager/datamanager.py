@@ -5,7 +5,15 @@ import numpy as np
 
 class DataManager:
     def __init__(self):
-        self.dataframes = []
+        self._dataframes = []
+        self._categories = []
+    
+    def _clean_columns(self, dataframe):
+        remove_columns = ["Kvalitet", "Tidsutsnitt", "Vindriktning"]
+        to_be_dropped = [x for x in dataframe.columns for y in remove_columns if x.startswith(y)]
+        #print(dataframe.columns)
+        #print(to_be_dropped)
+        return dataframe.drop(columns=to_be_dropped).dropna(how="all", axis=1)
     
     def load_dataframe(self, path):
         """load_dataframe reads path csv file and adds it as a dataframe into self.dataframes.
@@ -19,12 +27,36 @@ class DataManager:
 
         # Tries to append path csv as dataframe and send return code.
         try:
-            #TODO Skip rows intelligently as the data start at different points in different files.
-            self.dataframes.append(pandas.read_csv(filepath_or_buffer="path", sep=";", skiprows=range(9))) 
+            with open(path) as f:
+                for i, row in enumerate(f):
+                    if row.startswith("Datum;"):
+                        df = pandas.read_csv(filepath_or_buffer=path, sep=";", skiprows=i)
+                        #print(df)
+                        df = self._clean_columns(df)
+                        #print(df)
+                        self._dataframes.append(df)
+                        for cat in [cat for cat in df.columns if cat not in ["Datum", "Tid (UTC)"]]:
+                            if cat not in self._categories:
+                                self._categories.append(cat)
+                        break
             return 0
         except FileNotFoundError:
             return 1
-        except:
+        except Exception as e:
+            print(e)
             # If unspecified error occurs will return -1.
             return -1
     
+    @property
+    def categories(self):
+        return self._categories
+    
+    def get_category(self, category):
+        if category not in self._categories:
+            return -1
+        
+        for frame in self._dataframes:
+            if category in frame.columns:
+                return frame
+
+
