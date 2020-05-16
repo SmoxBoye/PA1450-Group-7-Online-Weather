@@ -6,7 +6,7 @@ class DrawManager():
     def __init__(self):
         pass
 
-    def create_fig(self,df,df_attribute = [], time_scope):
+    def create_fig(self, df, time_scope, df_attribute = []):
         if df_attribute == []:
             fig = px.line(df, x="time", y=df.columns[1])
         else:
