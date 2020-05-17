@@ -12,13 +12,12 @@
       <option value="clouds">Clouds</option>
       <option value="ws" selected>Wind Speed</option>
     </select>
-    <div id="graph"></div>
+    <iframe id="graph" src="{{ url_for('show_graph') }}"></iframe>
     <div id="graph-modifiers">
       <div id="import-box" class="modifier-boxes">
         <form id="import-new" action="/" method="POST" enctype="multipart/form-data">
           <input type="file" name="file">Select csv...</input>
           <button type="submit" value="Upload">Upload</button>
-          <button type="submit">Merge</button>
         </form>
       </div>
       <div id="time-frame-box" class="modifier-boxes">

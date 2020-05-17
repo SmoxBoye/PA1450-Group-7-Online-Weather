@@ -17,6 +17,6 @@ def create_app():
 
         # Import Dash application
         from .plotlydash.dashboard import create_dashboard
-        app = create_dashboard(app)
+        #app = create_dashboard(app)
 
         return app

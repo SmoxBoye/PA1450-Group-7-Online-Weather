@@ -4,10 +4,22 @@ from flask import current_app as app
 from flask import request, redirect, flash, url_for
 from werkzeug.utils import secure_filename
 import os
+from .drawmanager import DrawManager
+from .datamanager import DataManager
+
+
+ALLOWED_EXTENSIONS = {'csv'}
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
 @app.route('/', methods=["GET", "POST"])
 def home():
+    dm = DrawManager()
+    df = DataManager()
     """Landing page."""
     if request.method == 'POST':
         # check if the post request has the file part
@@ -15,15 +27,22 @@ def home():
         if 'file' in request.files:
             print("2")
             file = request.files['file']
-            if file.filename != '':
+            if file.filename != '' and allowed_file(file.filename):
                 print("3")
-                filename = secure_filename(file.filename)
-                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                file.save("data/data.csv")
+                print(df.load_dataframe("data/data.csv"))
+                print(len(df.categories))
+                dataf = df.get_category(df.categories[0])
+                print(dataf)
+                fig = dm.create_fig(dataf)
+                fig.write_html('application/templates/first_figure.html', auto_open=False)
+
 
     return render_template(
         'index.html',
-        title='Weather Application',
-        description='Very nice',
-        template='home-template',
-        body="yeet"
     )
+
+
+@app.route("/graph", methods=["GET"])
+def show_graph():
+    return render_template("first_figure.html")

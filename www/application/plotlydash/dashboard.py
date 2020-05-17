@@ -18,7 +18,7 @@ def create_dashboard(server):
                          )
 
     # Prepare a DataFrame
-    df = pd.read_csv('data/311-calls.csv', parse_dates=['created_date'])
+    df = pd.read_csv('data/data.csv', parse_dates=['created_date'])
     df['created_date'] = df['created_date'].dt.date
     num_complaints = df['complaint_type'].value_counts()
     to_remove = num_complaints[num_complaints <= 20].index

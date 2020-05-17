@@ -22,6 +22,4 @@ class Config:
     # Static Assets
     STATIC_FOLDER = environ.get('STATIC_FOLDER')
     TEMPLATES_FOLDER = environ.get('TEMPLATES_FOLDER')
-    UPLOAD_FOLDER = "application/uploads"
-    ALLOWED_EXTENSIONS = {"css"}
     COMPRESSOR_DEBUG = environ.get('COMPRESSOR_DEBUG')
