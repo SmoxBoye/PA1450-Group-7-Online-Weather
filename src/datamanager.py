@@ -9,7 +9,7 @@ class DataManager:
         self._categories = []
     
     def _clean_columns(self, dataframe):
-        remove_columns = ["Kvalitet", "Tidsutsnitt", "Vindriktning"]
+        remove_columns = ["Kvalitet", "Tidsutsnitt"]
         to_be_dropped = [x for x in dataframe.columns for y in remove_columns if x.startswith(y)]
         #print(dataframe.columns)
         #print(to_be_dropped)
@@ -31,14 +31,16 @@ class DataManager:
                 for i, row in enumerate(f):
                     if row.startswith("Datum;"):
                         df = pandas.read_csv(filepath_or_buffer=path, sep=";", skiprows=i)
-                        #print(df)
+                        
                         df = self._clean_columns(df)
-                        #print(df)
+                        
                         df.insert(0, "time", df["Datum"] + ":" + df["Tid (UTC)"].str[:2])
                         df = df.drop(columns=["Datum", "Tid (UTC)"])
-                        self._dataframes.append(df)
+                        #TODO Make categories updatable so if same cat is uploaded the old one gets replaced
                         for cat in [cat for cat in df.columns if cat != "time"]:
                             if cat not in self._categories:
+                                single_df = pandas.concat([df["time"], df[cat]], axis=1)
+                                self._dataframes.append(single_df)
                                 self._categories.append(cat)
                         break
             return 0
@@ -53,6 +55,10 @@ class DataManager:
     def categories(self):
         return self._categories
     
+    #TODO make get_unit work like a dynamic dict for the category unit
+    def get_unit(self, category):
+        pass
+    
     def get_category(self, category):
         if category not in self._categories:
             return -1
@@ -60,3 +66,15 @@ class DataManager:
         for frame in self._dataframes:
             if category in frame.columns:
                 return frame
+    
+    def get_multiple(self, categories):
+        dataframes = []
+        
+        for cat in categories:
+            dataframes.append(self.get_category(cat))
+        
+        multi = dataframes.pop(0)
+        for frame in dataframes:
+            multi = multi.merge(frame, how="outer", on="time")
+        
+        return multi
