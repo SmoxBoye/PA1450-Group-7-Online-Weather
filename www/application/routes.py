@@ -32,10 +32,11 @@ def home():
                 file.save("data/data.csv")
                 print(df.load_dataframe("data/data.csv"))
                 print(len(df.categories))
-                dataf = df.get_category(df.categories[0])
+                category = df.categories[0]
+                dataf = df.get_category(category)
                 print(dataf)
                 fig = dm.create_fig(dataf)
-                fig.write_html('application/templates/first_figure.html', auto_open=False)
+                fig.write_html('application/templates/' + str(category) + '.html', auto_open=False)
 
 
     return render_template(
