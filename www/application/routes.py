@@ -36,18 +36,34 @@ def home():
                 df = data.get_category(category)
                 #print(df)
                 fig = draw.create_fig(df)
-                fig.write_html('application/templates/categories/' + str(category) + '.html', auto_open=False)
-                file.save("data/" + str(category) + ".css")
+                fig.write_html('application/templates/categories/uploaded/' + str(category) + '.html', auto_open=False)
+                file.save("data/uploaded/" + str(category) + ".css")
 
     return render_template(
         'index.html',
     )
 
 
-@app.route("/categories/<string:cat_name>", methods=["GET"])
-def send_cat(cat_name):
+@app.route('/live', methods=["GET", "POST"])
+def live():
+    return render_template(
+        'live.html',
+    )
+
+
+@app.route("/export/<string:start>/<string:end>", methods=["POST", "GET"])
+def export(st, ed):
+    start = int(st.replace("-", ""))
+    end = int(ed.replace("-", ""))
+    return render_template(
+        'index.html',
+    )
+
+
+@app.route("/categories/<string:dir_name>/<string:cat_name>", methods=["GET"])
+def send_cat(cat_name, dir_name):
     #print(send_from_directory("application/templates/categories", cat_name + ".html"))
     print(cat_name)
-    return render_template("categories/" + cat_name + ".html")
+    return render_template("categories/" + dir_name + "/" + cat_name + ".html")
 
 

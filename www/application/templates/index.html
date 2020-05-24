@@ -11,6 +11,9 @@
   <body>
     <div id="header">
       <h1>Weather Application</h1>
+      <form action="/live">
+        <button type="submit" value="Show Live Data">View live data</button>
+      </form>
     </div>
     <div id="main-box">
       <div id="graph-box">
@@ -21,7 +24,7 @@
           <option value="Total molnmängd">Clouds</option>
           <option value="Vindhastighet">Wind Speed</option>
         </select>
-        <iframe id="graph" src="{{ url_for("send_cat", cat_name="Byvind") }}"></iframe>
+        <iframe id="graph" src="{{ url_for("send_cat", cat_name="Byvind", dir_name="uploaded") }}"></iframe>
         <div id="graph-modifiers">
           <div id="import-box" class="modifier-boxes">
             <form id="import-new" action="/" method="POST" enctype="multipart/form-data">
@@ -29,16 +32,18 @@
               <button type="submit" value="Upload">Upload</button>
             </form>
           </div>
+          <!--
           <div id="time-frame-box" class="modifier-boxes">
             <p style="margin-top:0;">Time frame</p>
+            <div id="time-frame-inputs"></div>
+          </div>
+          -->
+          <div id="export-box" class="modifier-boxes">
+            <button id="export" class="import-boxes" onclick="export_file()"><p>Export</button>
             <div id="tf-boxes">
               <input type="date" id="tf-1">
               <input type="date" id="tf-2">
             </div>
-            <div id="time-frame-inputs"></div>
-          </div>
-          <div id="export-box" class="modifier-boxes">
-            <button id="export" class="import-boxes"><p>Export</button>
           </div>
         </div>
       </div>
@@ -57,8 +62,15 @@
     function cat_change(){
       var selected = document.getElementById("category");
       var graph = document.getElementById("graph");
-      graph.src = "/categories/".concat(selected.options[selected.selectedIndex].value);
+      graph.src = "/categories/uploaded/".concat(selected.options[selected.selectedIndex].value);
      }
+    function export_file(){
+      var start = document.getElementById("tf-1").value;
+      var stop = document.getElementById("tf-2").value;
+      if (start != "" && stop != ""){
+        window.location.href = "/export/".concat(start, "/", stop);
+      }
+    }
     </script>
   </body>
 </html>
