@@ -150,13 +150,3 @@ class DataManager:
         
         
         return multi_data
-
-dm = DataManager()
-dm.load_dataframe(r"downloads\forecast_hour_by_hour.xml")
-dm.load_dataframe(r"downloads\smhi-opendata_7_65090_20200514_132531.csv")
-print(dm.categories)
-#print(dm.get_category("precipitation"))
-#print(dm.get_category("Nederbördsmängd"))
-aaa = dm.get_category(["precipitation", "Nederbördsmängd"])
-print(aaa[0])
-print(aaa[1])
