@@ -58,5 +58,12 @@
         <div class="name">Jesper Lönn Stråle</div>
       </div>
     </div>
+    <script>
+    function cat_change(){
+      var selected = document.getElementById("category");
+      var graph = document.getElementById("graph");
+      graph.src = "/categories/live/".concat(selected.options[selected.selectedIndex].value);
+     }
+    </script>
   </body>
 </html>

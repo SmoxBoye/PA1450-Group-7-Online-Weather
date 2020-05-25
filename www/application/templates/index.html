@@ -11,24 +11,28 @@
   <body>
     <div id="header">
       <h1>Weather Application</h1>
-      <form action="/live">
+      <!--<form action="/live">
         <button type="submit" value="Show Live Data">View live data</button>
-      </form>
+      </form>-->
     </div>
     <div id="main-box">
       <div id="graph-box">
         <select id="category" onchange="cat_change()">
-          <option value="Byvind">Byvind</option>
+          <option value="Lufttemperatur">Lufttemperatur</option>
           <option value="Lufttryck reducerat havsytans nivå">Lufttryck reducerat havsytans nivå</option>
           <option value="Nederbördsmängd">Nederbördsmängd</option>
-          <option value="Total molnmängd">Clouds</option>
-          <option value="Vindhastighet">Wind Speed</option>
+          <option value="Total molnmängd">Total molnmängd</option>
+          <option value="Byvind">Vindhastighet</option>
         </select>
-        <iframe id="graph" src="{{ url_for("send_cat", cat_name="Byvind", dir_name="uploaded") }}"></iframe>
+        <iframe id="graph" src="{{ url_for("send_cat", cat_name="Lufttemperatur", dir_name="uploaded") }}"></iframe>
         <div id="graph-modifiers">
           <div id="import-box" class="modifier-boxes">
-            <form id="import-new" action="/" method="POST" enctype="multipart/form-data">
+            <form id="import-new-csv" action="/upload/csv" method="POST" enctype="multipart/form-data">
               <input type="file" name="file">Select csv...</input>
+              <button type="submit" value="Upload">Upload</button>
+            </form>
+            <form id="import-new-xml" action="/upload/xml" method="POST" enctype="multipart/form-data">
+              <input type="file" name="file">Select xml...</input>
               <button type="submit" value="Upload">Upload</button>
             </form>
           </div>
@@ -40,10 +44,12 @@
           -->
           <div id="export-box" class="modifier-boxes">
             <button id="export" class="import-boxes" onclick="export_file()"><p>Export</button>
+            <!--
             <div id="tf-boxes">
               <input type="date" id="tf-1">
               <input type="date" id="tf-2">
             </div>
+            -->
           </div>
         </div>
       </div>
@@ -65,11 +71,12 @@
       graph.src = "/categories/uploaded/".concat(selected.options[selected.selectedIndex].value);
      }
     function export_file(){
-      var start = document.getElementById("tf-1").value;
-      var stop = document.getElementById("tf-2").value;
-      if (start != "" && stop != ""){
-        window.location.href = "/export/".concat(start, "/", stop);
-      }
+      //var start = document.getElementById("tf-1").value;
+      //var stop = document.getElementById("tf-2").value;
+      var selected = document.getElementById("category");
+      //window.location.href = "/export/".concat(selected.options[selected.selectedIndex].value, "/", start, "/", stop);
+      window.location.href = "/export/".concat(selected.options[selected.selectedIndex].value);
+
     }
     </script>
   </body>

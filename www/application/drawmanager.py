@@ -1,4 +1,4 @@
-from datamanager import DataManager
+from .datamanager import DataManager
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
@@ -83,7 +83,7 @@ class DrawManager():
 
         file_name = sorted(file_name)
         file_name = "".join(file_name)
-        fig.write_html(path + file_name + ".html", auto_open=open)
+        fig.write_html(path, auto_open=False)
         return path + file_name+".html"
 
 
