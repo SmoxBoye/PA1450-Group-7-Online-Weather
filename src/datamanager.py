@@ -1,6 +1,8 @@
 import pandas
 import numpy as np
 import xml.etree.ElementTree as et
+import io
+import json
 
 class DataManager:
     def __init__(self):
@@ -78,7 +80,7 @@ class DataManager:
             windd = self._find_and_get(node, "windDirection", "deg")
             winds = self._find_and_get(node, "windSpeed", "mps")
             temp = self._find_and_get(node, "temperature", "value")
-            pressure = self._find_and_get(node, "temperature", "value")
+            pressure = self._find_and_get(node, "pressure", "value")
             
             rows.append({"time": time, "precipitation": persc, "windDirection": windd,
                             "windSpeed": winds, "temperature": temp, "pressure": pressure})
@@ -90,7 +92,33 @@ class DataManager:
         df["time"] = df["time"].str[:13]
         self._save_dataframes(df)
     
-
+    def _load_json(self, path):
+        with open(path) as f:
+            json_file = json.load(f)
+        
+        rows = []
+        
+        for time in json_file.get("timeSeries"):
+            row = {}
+            row["time"] = time.get("validTime")
+            categories = ["time"]
+            for parameter in time.get("parameters"):
+                name = parameter.get("name")
+                unit = parameter.get("unit")
+                value = parameter.get("values")[0]
+                row[name] = value
+                self._cat_unit[name] = unit
+                if name not in categories:
+                    categories.append(name)
+            rows.append(row)
+        
+        df = pandas.DataFrame(rows, columns=categories)
+        df["time"] = df["time"].str.replace(r"[T]", ":")
+        df["time"] = df["time"].str[:13]
+        
+        self._save_dataframes(df)
+    
+    
     def load_dataframe(self, path):
         """load_dataframe reads path csv file and adds it as a dataframe into self.dataframes.
 
@@ -102,6 +130,8 @@ class DataManager:
                 self._load_csv(path)
             elif path.endswith(".xml"):
                 self._load_xml(path)
+            elif path.endswith(".json"):
+                self._load_json(path)
         except Exception as e:
             print(e)
             return -1
@@ -112,17 +142,20 @@ class DataManager:
         return self._categories
     
     def get_unit(self, category):
-        return self._cat_unit[category]
+        try: 
+            return self._cat_unit[category]
+        except:
+            return ""
     
     def get_category(self, category):
         if type(category) is str:
-            return self.get_single(category)
+            return self._get_single(category)
         elif type(category) is list and len(category) > 1:
-            return self.get_multiple(category)
+            return self._get_multiple(category)
         else:
             raise TypeError("get_category only supports string or list objects > 1")
     
-    def get_single(self, category):
+    def _get_single(self, category):
         if category not in self._categories:
             return -1
         
@@ -130,17 +163,21 @@ class DataManager:
             if category in frame.columns:
                 return frame
     
-    def get_multiple(self, categories):
+    def _create_multi_frame(self, categories):
         dataframes = []
         
         for cat in categories:
-            dataframes.append(self.get_single(cat))
+            dataframes.append(self._get_single(cat))
         
         multi = dataframes.pop(0)
         for frame in dataframes:
             multi = multi.merge(frame, how="outer", on="time")
         multi = multi.sort_values(by=["time"])
         multi = multi.replace({np.nan: None})
+        return multi
+    
+    def _get_multiple(self, categories):
+        multi = self._create_multi_frame(categories)
         
         multi_data = []
         
@@ -150,3 +187,22 @@ class DataManager:
         
         
         return multi_data
+    
+    def export(self, category):
+        if type(category) is str:
+            df = self._get_single(category)
+        elif type(category) is list and len(category) > 1:
+            df = self._create_multi_frame(category)
+        else:
+            raise TypeError("get_category only supports string or list objects > 1")
+        
+        return df.to_csv()
+
+
+dm = DataManager()
+
+dm.load_dataframe("downloads\data.json")
+dm.load_dataframe(r"downloads\forecast_hour_by_hour.xml")
+
+print(dm.get_category("t"))
+print(dm.get_category("temperature"))
