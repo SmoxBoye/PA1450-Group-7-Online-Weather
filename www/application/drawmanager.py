@@ -2,13 +2,14 @@ from datamanager import DataManager
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import plotly.express as px
 
 class DrawManager():
     def __init__(self):
         pass
 
     def create_fig(self, df, df_attribute = []):
-        fig = go.line(df, x="time", y=df.columns[1])
+        fig = px.line(df, x="time", y=df.columns[1])
         return fig
 
     def create_html(self, dfs, path = "", open = False, units = []):
