@@ -113,6 +113,9 @@ class DataManager:
             rows.append(row)
         
         df = pandas.DataFrame(rows, columns=categories)
+        df["time"] = df["time"].str.replace(r"[T]", ":")
+        df["time"] = df["time"].str[:13]
+        
         self._save_dataframes(df)
     
     
@@ -194,3 +197,12 @@ class DataManager:
             raise TypeError("get_category only supports string or list objects > 1")
         
         return df.to_csv()
+
+
+dm = DataManager()
+
+dm.load_dataframe("downloads\data.json")
+dm.load_dataframe(r"downloads\forecast_hour_by_hour.xml")
+
+print(dm.get_category("t"))
+print(dm.get_category("temperature"))
