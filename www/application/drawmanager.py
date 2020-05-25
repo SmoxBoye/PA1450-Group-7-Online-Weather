@@ -8,7 +8,7 @@ class DrawManager():
         pass
 
     def create_fig(self, df, df_attribute = []):
-        fig = px.line(df, x="time", y=df.columns[1])
+        fig = go.line(df, x="time", y=df.columns[1])
         return fig
 
     def create_html(self, dfs, path = "", open = False, units = []):
