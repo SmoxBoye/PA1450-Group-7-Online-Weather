@@ -2,21 +2,22 @@ from datamanager import DataManager
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import plotly.express as px
 
 class DrawManager():
     def __init__(self):
         pass
 
     def create_fig(self, df, df_attribute = []):
-            fig = px.line(df, x="time", y=df.columns[1])
+        fig = px.line(df, x="time", y=df.columns[1])
         return fig
 
     def create_html(self, dfs, path = "", open = False, units = []):
         if units == []:
             units = [""]*len(dfs)
         else:
-            for unit in units:
-                unit = " (" + unit + ")"
+            for i in range(len(units)):
+                units[i] = " (" + units[i] + ")"
 
         colors = ["#1f77b4", "#d62728", "#32C77C", "#9467bd", "#ff7f0e", "#1f77b4", "#d62728", "#32C77C", "#9467bd", "#ff7f0e"]
         file_name = []
@@ -49,6 +50,7 @@ class DrawManager():
         )
 
         for i in range(2, 1 + len(dfs)):
+            print(i)
             layout["yaxis" + str(i)]=dict(
                 title=dfs[i-1].columns[1]+units[i-1],
                 titlefont=dict(
@@ -84,7 +86,8 @@ if __name__ == "__main__":
 
     for file_number in range(len(files)):
         data_m.load_dataframe(files[file_number])
-        dfs.append(data_m.get_category(data_m.categories[file_number]))
+        #dfs.append(data_m.get_category(data_m.categories[file_number]))
+    dfs = data_m.get_multiple(data_m.categories)
 
     draw_m = DrawManager()
-    html_name = draw_m.create_html(dfs, path = "", open = True)
+    html_name = draw_m.create_html(dfs, path = "", open = True, units = [data_m.get_unit(category) for category in data_m.categories])
