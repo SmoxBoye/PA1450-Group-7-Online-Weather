@@ -1,4 +1,5 @@
 import pandas
+import numpy as np
 import xml.etree.ElementTree as et
 
 class DataManager:
@@ -30,17 +31,8 @@ class DataManager:
             for index, row in df.iterrows():
                 self._cat_unit[row["Parameternamn"]] = row["Enhet"]
     
-    def load_csv(self, path):
-        with open(path) as f:
-            for i, row in enumerate(f):
-                if row.startswith("Datum;"):
-                    df = pandas.read_csv(filepath_or_buffer=path, sep=";", skiprows=i)
-                    
-                    df = self._clean_columns(df)
-                    
-                    df.insert(0, "time", df["Datum"] + ":" + df["Tid (UTC)"].str[:2])
-                    df = df.drop(columns=["Datum", "Tid (UTC)"])
-                    for cat in [cat for cat in df.columns if cat != "time"]:
+    def _save_dataframes(self, df):
+        for cat in [cat for cat in df.columns if cat != "time"]:
                         if cat not in self._categories:
                             single_df = pandas.concat([df["time"], df[cat]], axis=1)
                             self._dataframes.append(single_df)
@@ -50,17 +42,29 @@ class DataManager:
                             for i, frame in enumerate(self._dataframes):
                                 if cat in frame.columns:
                                     self._dataframes[i] = single_df
+    
+    def _load_csv(self, path):
+        with open(path) as f:
+            for i, row in enumerate(f):
+                if row.startswith("Datum;"):
+                    df = pandas.read_csv(filepath_or_buffer=path, sep=";", skiprows=i)
+                    
+                    df = self._clean_columns(df)
+                    
+                    df.insert(0, "time", df["Datum"] + ":" + df["Tid (UTC)"].str[:2])
+                    df = df.drop(columns=["Datum", "Tid (UTC)"])
+                    self._save_dataframes(df)
                     break
         self._get_unit_from_file(path)
     
-    def find_and_get(self, node, find, get):
+    def _find_and_get(self, node, find, get):
         try: 
             return node.find(find).attrib.get(get)
         except Exception as e:
             print(e)
             return None
     
-    def load_xml(self, path):
+    def _load_xml(self, path):
         with open(path) as f:
             xtree = et.parse(f)
             
@@ -70,18 +74,22 @@ class DataManager:
         rows = []
         for node in root:
             time = node.attrib.get("from")
-            persc = self.find_and_get(node, "precipitation", "value")
-            windd = self.find_and_get(node, "windDirection", "deg")
-            winds = self.find_and_get(node, "windSpeed", "mps")
-            temp = self.find_and_get(node, "temperature", "value")
-            pressure = self.find_and_get(node, "temperature", "value")
+            persc = self._find_and_get(node, "precipitation", "value")
+            windd = self._find_and_get(node, "windDirection", "deg")
+            winds = self._find_and_get(node, "windSpeed", "mps")
+            temp = self._find_and_get(node, "temperature", "value")
+            pressure = self._find_and_get(node, "temperature", "value")
             
             rows.append({"time": time, "precipitation": persc, "windDirection": windd,
                             "windSpeed": winds, "temperature": temp, "pressure": pressure})
         
         df = pandas.DataFrame(rows, columns=[
                               "time", "precipitation", "windDirection", "windSpeed", "temperature", "pressure"])
-        print(df)
+        
+        df["time"] = df["time"].str.replace(r"[T]", ":")
+        df["time"] = df["time"].str[:13]
+        self._save_dataframes(df)
+    
 
     def load_dataframe(self, path):
         """load_dataframe reads path csv file and adds it as a dataframe into self.dataframes.
@@ -89,10 +97,14 @@ class DataManager:
         Args:
             path (string): the path to the csv file.
         """ 
-        if path.endswith(".csv"):
-            self.load_csv(path)
-        elif path.endswith(".xml"):
-            self.load_xml(path)
+        try:
+            if path.endswith(".csv"):
+                self._load_csv(path)
+            elif path.endswith(".xml"):
+                self._load_xml(path)
+        except Exception as e:
+            print(e)
+            return -1
 
     
     @property
@@ -127,5 +139,24 @@ class DataManager:
         multi = dataframes.pop(0)
         for frame in dataframes:
             multi = multi.merge(frame, how="outer", on="time")
+        multi = multi.sort_values(by=["time"])
+        multi = multi.replace({np.nan: None})
         
-        return multi
+        multi_data = []
+        
+        for cat in multi.columns:
+            if cat != "time":
+                multi_data.append(pandas.concat([multi["time"], multi[cat]], axis=1))
+        
+        
+        return multi_data
+
+dm = DataManager()
+dm.load_dataframe(r"downloads\forecast_hour_by_hour.xml")
+dm.load_dataframe(r"downloads\smhi-opendata_7_65090_20200514_132531.csv")
+print(dm.categories)
+#print(dm.get_category("precipitation"))
+#print(dm.get_category("Nederbördsmängd"))
+aaa = dm.get_category(["precipitation", "Nederbördsmängd"])
+print(aaa[0])
+print(aaa[1])
