@@ -2,6 +2,7 @@ from datamanager import DataManager
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
+import plotly.express as px
 
 class DrawManager():
     def __init__(self):
@@ -11,58 +12,73 @@ class DrawManager():
         fig = px.line(df, x="time", y=df.columns[1])
         return fig
 
-    def create_html(self, dfs, path = "", open = False, units = []):
+    def create_html(self, dfs, path = "", open = False, units = [], same_y = False, sources = []):
         if units == []:
             units = [""]*len(dfs)
         else:
             for i in range(len(units)):
                 units[i] = " (" + units[i] + ")"
+        if sources == []:
+            sources = [""]*len(dfs)
+        else:
+            for i in range(len(sources)):
+                sources[i] = " (" + sources[i] + ")"
 
         colors = ["#1f77b4", "#d62728", "#32C77C", "#9467bd", "#ff7f0e", "#1f77b4", "#d62728", "#32C77C", "#9467bd", "#ff7f0e"]
         file_name = []
         fig = go.Figure()
 
         for i in range(len(dfs)):
+            if same_y:
+                y_axis = ""
+            else:
+                y_axis = i + 1
             file_name.append(dfs[i].columns[1])
             fig.add_trace(go.Scatter(
                 x = dfs[i].loc[:,dfs[i].columns[0]],
                 y = dfs[i].loc[:,dfs[i].columns[1]],
-                name=dfs[i].columns[1]+units[i],
-                yaxis="y"+str(i + 1)
+                name=dfs[i].columns[1] + sources[i],
+                yaxis="y"+str(y_axis)
             ))
 
         layout = {}
-        layout["xaxis"]=dict(
-            domain=[(len(dfs) - 1) * 0.05, 1]
-        )
-        layout["yaxis1"]=dict(
-            title=dfs[0].columns[1]+units[0],
-            titlefont=dict(
-                color="#1f77b4"
-            ),
-            tickfont=dict(
-                color="#1f77b4"
-            ),
-            anchor="free",
-            side="left",
-            position=0
-        )
-
-        for i in range(2, 1 + len(dfs)):
-            print(i)
-            layout["yaxis" + str(i)]=dict(
-                title=dfs[i-1].columns[1]+units[i-1],
+        if same_y:
+            layout["xaxis"]=dict(
+                domain=[0, 1]
+            )
+            layout["yaxis1"]=dict(
+                title=dfs[0].columns[1]+units[0],
+            )
+        else:
+            layout["xaxis"]=dict(
+                domain=[(len(dfs) - 1) * 0.05, 1]
+            )
+            layout["yaxis1"]=dict(
+                title=dfs[0].columns[1]+units[0],
                 titlefont=dict(
-                    color=colors[i-1]
+                    color="#1f77b4"
                 ),
                 tickfont=dict(
-                    color=colors[i-1]
+                    color="#1f77b4"
                 ),
                 anchor="free",
-                overlaying="y",
                 side="left",
-                position=(i - 1) * 0.05
+                position=0
             )
+            for i in range(2, 1 + len(dfs)):
+                layout["yaxis" + str(i)]=dict(
+                    title=dfs[i-1].columns[1]+units[i-1],
+                    titlefont=dict(
+                        color=colors[i-1]
+                    ),
+                    tickfont=dict(
+                        color=colors[i-1]
+                    ),
+                    anchor="free",
+                    overlaying="y",
+                    side="left",
+                    position=(i - 1) * 0.05
+                )
         fig.update_layout(layout)
 
         file_name = sorted(file_name)
