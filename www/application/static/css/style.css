@@ -71,6 +71,11 @@
     flex-direction:column;
 
 }
+#export-box{
+    display:flex;
+    align-items:center;
+    flex-direction:column;
+}
 #tf-boxes{
     display:flex;
     flex-direction:row;
