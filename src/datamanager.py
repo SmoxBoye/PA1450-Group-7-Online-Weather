@@ -193,8 +193,4 @@ class DataManager:
         else:
             raise TypeError("get_category only supports string or list objects > 1")
         
-        string_buffer = io.StringIO()
-        
-        df.to_csv(string_buffer)
-        
-        return string_buffer
+        return df.to_csv()
