@@ -7,7 +7,7 @@ The weather application uses a website. Go to http://maplebeam.wtf to see the re
 
 1: Here you choose what category of data you want to display.
 
-2: Here you have the ability to uppload new or uppdated weather data to display.
+2: Here you have the ability to upload new or updated weather data to display.
 
 3: Here you are able to export the current displayed data.
 
