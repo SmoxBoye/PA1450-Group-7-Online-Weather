@@ -12,7 +12,7 @@ class DrawManager():
         fig = px.line(df, x="time", y=df.columns[1])
         return fig
 
-    def create_html(self, dfs, path = "", open = False, units = [], same_y = False, sources = []):
+    def create_html(self, dfs, path = "", open = False, same_y = False, units = [], sources = []):
         if units == []:
             units = [""]*len(dfs)
         else:

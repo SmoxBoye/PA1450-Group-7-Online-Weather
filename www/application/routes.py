@@ -11,12 +11,12 @@ ALLOWED_EXTENSIONS = {'csv', 'xml'}
 smhi_to_yr = {"Lufttemperatur" : "temperature", "Byvind" : "windSpeed", "Lufttryck reducerat havsytans nivå" : "pressure", "Vindriktning" : "windDirection", "Nederbördsmängd" : "precipitation", "" : ""}
 draw = DrawManager()
 data = DataManager()
-data.load_dataframe("data/data.xml")
-data.load_dataframe("data/downloads/Moln.csv")
-data.load_dataframe("data/downloads/Regn.csv")
-data.load_dataframe("data/downloads/Temperatur.csv")
-data.load_dataframe("data/downloads/Tryck.csv")
-data.load_dataframe("data/downloads/Vindhastighet.csv")
+data.load_dataframe("data/default/data.xml")
+data.load_dataframe("data/default/Moln.csv")
+data.load_dataframe("data/default/Regn.csv")
+data.load_dataframe("data/default/Temperatur.csv")
+data.load_dataframe("data/default/Tryck.csv")
+data.load_dataframe("data/default/Vindhastighet.csv")
 
 
 def allowed_file(filename):
@@ -88,7 +88,21 @@ def upload(extension):
                         df = data.get_category(category)
                         dfs.append(df)
                         dfs.append(data.get_category(smhi_to_yr[str(category)]))
-                        draw.create_html(dfs, 'application/templates/categories/uploaded/' + str(category) + '.html')
+                        if str(category) != "Nederbördsmängd":
+                            draw.create_html(dfs, 'application/templates/categories/uploaded/' + str(category) + '.html'
+                                             , False, True)
+                        else:
+                            draw.create_html(dfs, 'application/templates/categories/uploaded/' + str(category) + '.html'
+                                             , False, False)
+                    elif str(category) == "Total molnmängd":
+                        dfs = []
+                        category = data.categories[i]
+                        df = data.get_category(category)
+                        dfs.append(df)
+                        draw.create_html(dfs, 'application/templates/categories/uploaded/' + str(category) + '.html'
+                                            , False, True)
+
+
     return render_template(
         'index.html',
     )
