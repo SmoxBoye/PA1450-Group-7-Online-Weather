@@ -1,9 +1,5 @@
 """Initialize Flask app."""
-from flask import Flask, flash, request, redirect, url_for
-from werkzeug.utils import secure_filename
-import os
-from flask_assets import Environment
-import dash_html_components as html
+from flask import Flask
 
 
 def create_app():

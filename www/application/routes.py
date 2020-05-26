@@ -1,16 +1,16 @@
 """Core Flask app routes."""
-from flask import render_template, send_file, send_from_directory
+from flask import render_template, send_file
 from flask import current_app as app
 from flask import request
 from .drawmanager import DrawManager
 from .datamanager import DataManager
-import os
 
-
-ALLOWED_EXTENSIONS = {'csv', 'xml'}
-smhi_to_yr = {"Lufttemperatur" : "temperature", "Byvind" : "windSpeed", "Lufttryck reducerat havsytans nivå" : "pressure", "Vindriktning" : "windDirection", "Nederbördsmängd" : "precipitation", "" : ""}
+ALLOWED_EXTENSIONS = {'csv', 'xml', 'json'}
+smhi_to_yr = {"Lufttemperatur": "temperature", "Byvind": "windSpeed", "Lufttryck reducerat havsytans nivå": "pressure",
+              "Vindriktning": "windDirection", "Nederbördsmängd": "precipitation", "": ""}
 draw = DrawManager()
 data = DataManager()
+# Loads default data into datamanager
 data.load_dataframe("data/default/data.xml")
 data.load_dataframe("data/default/Moln.csv")
 data.load_dataframe("data/default/Regn.csv")
@@ -22,12 +22,6 @@ data.load_dataframe("data/default/Vindhastighet.csv")
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-
-def get_key(val):
-    for key, value in smhi_to_yr.items():
-         if val == value:
-             return key
 
 
 @app.route('/', methods=["GET", "POST"])
@@ -48,20 +42,14 @@ def live():
 
 @app.route("/export/<string:category>", methods=["POST", "GET"])
 def export(category):
-    #start = int(st.replace("-", ""))
-    #end = int(ed.replace("-", ""))
-    file = open("export.csv", "w")
+    file = open("application/export.csv", "w")
     file.write(data.export(category))
     file.close()
-    # print(category)
-    # print(start)
-    # print(end)
     return send_file("export.csv", attachment_filename=f"export.csv", as_attachment=True)
 
 
 @app.route("/categories/<string:dir_name>/<string:cat_name>", methods=["GET"])
 def send_cat(cat_name, dir_name):
-    #print(send_from_directory("application/templates/categories", cat_name + ".html"))
     print(cat_name)
     return render_template("categories/" + dir_name + "/" + cat_name + ".html")
 
@@ -74,8 +62,6 @@ def upload(extension):
             print("2")
             file = request.files['file']
             if file.filename != '' and allowed_file(file.filename):
-                category = ""
-                dfs = []
                 print("3")
                 file.save("data/data" + "." + extension)
                 print(data.load_dataframe("data/data" + "." + extension))
@@ -100,8 +86,7 @@ def upload(extension):
                         df = data.get_category(category)
                         dfs.append(df)
                         draw.create_html(dfs, 'application/templates/categories/uploaded/' + str(category) + '.html'
-                                            , False, True)
-
+                                         , False, True)
 
     return render_template(
         'index.html',
